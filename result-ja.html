@@ -105,20 +105,22 @@
         /* モバイル横向き最適化 */
         @media only screen and (max-width: 768px) {
             .ziwei {
-                min-height: 400px;
+                min-height: 280px;
+                max-height: 450px;
             }
             .ziwei > div {
-                min-height: 100px;  /* 高さを増やして重なりを防ぐ */
+                min-height: 60px;  /* 100%ズームに対応するため50%縮小 */
             }
         }
 
         /* モバイル縦向き最適化 */
         @media only screen and (max-width: 480px) {
             .ziwei {
-                min-height: 350px;
+                min-height: 240px;
+                max-height: 380px;
             }
             .ziwei > div {
-                min-height: 85px;  /* 高さを増やして重なりを防ぐ */
+                min-height: 50px;  /* 100%ズームに対応するため50%縮小 */
             }
             .header-controls {
                 margin: 10px 0;

@@ -105,20 +105,22 @@
         /* 手機橫向優化 */
         @media only screen and (max-width: 768px) {
             .ziwei {
-                min-height: 400px;
+                min-height: 280px;
+                max-height: 450px;
             }
             .ziwei > div {
-                min-height: 100px;  /* 增加高度避免重疊 */
+                min-height: 60px;  /* 縮小50%以適應100%縮放 */
             }
         }
 
         /* 手機直向優化 */
         @media only screen and (max-width: 480px) {
             .ziwei {
-                min-height: 350px;
+                min-height: 240px;
+                max-height: 380px;
             }
             .ziwei > div {
-                min-height: 85px;  /* 增加高度避免重疊 */
+                min-height: 50px;  /* 縮小50%以適應100%縮放 */
             }
             .header-controls {
                 margin: 10px 0;
