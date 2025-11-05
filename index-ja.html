@@ -1,15 +1,15 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Language" content="zh-tw">
+    <meta http-equiv="Content-Language" content="ja">
     <link rel="shortcut icon" type="image/png" href="/abc.jpg"/>
-    <title>紫微斗數命盤 - 資料輸入</title>
+    <title>紫微斗数命盤 - 入力</title>
     <style>
         body {
             background-color: #FFFFFF;
-            font-family: Arial, "Microsoft JhengHei", sans-serif;
+            font-family: Arial, "Microsoft JhengHei", "Hiragino Kaku Gothic Pro", "Yu Gothic", sans-serif;
             margin: 0;
             padding: 20px;
             display: flex;
@@ -267,24 +267,24 @@
     <div class="loading-overlay" id="loadingOverlay">
         <div class="loading-content">
             <div class="loading-spinner"></div>
-            <div class="loading-text">計算中請稍候...</div>
-            <div class="loading-subtext">正在處理您的命盤資料</div>
+            <div class="loading-text">計算中、お待ちください...</div>
+            <div class="loading-subtext">命盤データを処理しています</div>
         </div>
     </div>
 
     <div class="container">
         <!-- 語言切換器 -->
         <div class="language-switcher">
-            <a href="index.html" class="lang-btn active">中文</a>
+            <a href="index.html" class="lang-btn">中文</a>
             <a href="index-en.html" class="lang-btn">English</a>
-            <a href="index-ja.html" class="lang-btn">日本語</a>
+            <a href="index-ja.html" class="lang-btn active">日本語</a>
         </div>
 
-        <h1>紫微斗數命盤</h1>
+        <h1>紫微斗数命盤</h1>
 
         <form id="zwForm">
             <div class="form-group">
-                <label>出生日期（西元）</label>
+                <label>生年月日（西暦）</label>
                 <div>
                     <select id="sel_Year"></select> 年
                     <select id="sel_Month"></select> 月
@@ -293,10 +293,10 @@
             </div>
 
             <div class="form-group">
-                <label>出生時間</label>
+                <label>出生時刻</label>
                 <div>
                     <input type="time" id="birthTime" value="12:00">
-                    <span class="time-display" id="timeDisplay">→ 午時 (11:00-12:59)</span>
+                    <span class="time-display" id="timeDisplay">→ 午の刻 (11:00-12:59)</span>
                 </div>
             </div>
 
@@ -304,38 +304,38 @@
                 <label>性別</label>
                 <div class="radio-group">
                     <label>
-                        <input type="radio" name="gender" value="M" checked> 男
+                        <input type="radio" name="gender" value="M" checked> 男性
                     </label>
                     <label>
-                        <input type="radio" name="gender" value="F"> 女
+                        <input type="radio" name="gender" value="F"> 女性
                     </label>
                 </div>
             </div>
 
             <div class="button-group">
-                <input type="button" value="使用現在時間" id="btnNowDate" class="btn-secondary">
-                <input type="button" value="開始計算" id="btnCalculate">
+                <input type="button" value="現在の時刻を使用" id="btnNowDate" class="btn-secondary">
+                <input type="button" value="計算開始" id="btnCalculate">
             </div>
         </form>
 
         <div class="info">
-            * 時間以出生地當地時間為準<br>
-            * 23:00後算隔日子時
+            * 時刻は出生地の現地時間で入力してください<br>
+            * 23:00以降は翌日の子の刻となります
         </div>
 
         <div class="service-notice">
-            <strong>📋 服務說明</strong><br>
-            我正在練習中，在一定的時間內是免費的。<br>
-            如果你有興趣進一步了解，請來信提供你的資料與想問的問題：<br>
+            <strong>📋 サービスについて</strong><br>
+            私は現在練習中で、一定期間無料でサービスを提供しています。<br>
+            詳しく知りたい方は、データと質問をメールでお送りください：<br>
             📧 <a href="mailto:kordwave@gmail.com">kordwave@gmail.com</a>
         </div>
     </div>
 
-    <!-- Buy Me a Coffee 按鈕 -->
+    <!-- Buy Me a Coffee ボタン -->
     <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
         <a href="https://www.buymeacoffee.com/jinhssu" target="_blank">
-            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png" 
-                 alt="Buy Me A Coffee" 
+            <img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png"
+                 alt="Buy Me A Coffee"
                  style="height: 60px !important; width: 217px !important;">
         </a>
     </div>
@@ -344,7 +344,7 @@
     <script src="js/time-converter.js"></script>
     <script src="js/language.js"></script>
     <script>
-        // 初始化選項
+        // 初期化オプション
         function addOption(id, a, b) {
             for (let i = a; i <= b; i++) {
                 let op = document.createElement('option');
@@ -354,12 +354,12 @@
             }
         }
 
-        // 填充年月日選項
+        // 年月日オプションを設定
         addOption("sel_Year", 1900, 2049);
         addOption("sel_Month", 1, 12);
         addOption("sel_Day", 1, 31);
 
-        // 設定現在時間
+        // 現在時刻を設定
         function setNowDate() {
             const Today = new Date();
             const h = Today.getHours();
@@ -367,38 +367,38 @@
             document.getElementById("sel_Year").value = Today.getFullYear();
             document.getElementById("sel_Month").value = Today.getMonth() + 1;
             document.getElementById("sel_Day").value = Today.getDate();
-            
-            // 設定當前時間
+
+            // 現在時刻を設定
             const time = formatTime(h, Today.getMinutes());
             document.getElementById("birthTime").value = time;
             updateTimeDisplay();
         }
 
-        // 更新時辰顯示
+        // 時刻表示を更新
         function updateTimeDisplay() {
             const timeInput = document.getElementById("birthTime").value;
             const timeDisplay = document.getElementById("timeDisplay");
-            
+
             if (timeInput) {
                 const branchInfo = timeToEarthlyBranch(timeInput);
                 if (branchInfo) {
-                    timeDisplay.textContent = `→ ${branchInfo.branch}時 (${branchInfo.timeRange})`;
+                    timeDisplay.textContent = `→ ${branchInfo.branchJa}の刻 (${branchInfo.timeRange})`;
                 }
             }
         }
 
-        // 初始化為現在時間
+        // 現在時刻で初期化
         setNowDate();
 
-        // 監聽時間輸入變化
+        // 時刻入力変更を監視
         document.getElementById("birthTime").addEventListener('change', updateTimeDisplay);
         document.getElementById("birthTime").addEventListener('input', updateTimeDisplay);
 
-        // 按鈕事件
+        // ボタンイベント
         document.getElementById("btnNowDate").addEventListener('click', setNowDate);
 
         document.getElementById("btnCalculate").addEventListener('click', function() {
-            // 顯示載入提示
+            // ローディングオーバーレイを表示
             const loadingOverlay = document.getElementById('loadingOverlay');
             const btnCalculate = document.getElementById('btnCalculate');
             const btnNowDate = document.getElementById('btnNowDate');
@@ -408,16 +408,16 @@
             btnNowDate.disabled = true;
 
             try {
-                // 收集資料
+                // データ収集
                 const year = document.getElementById("sel_Year").value;
                 const month = document.getElementById("sel_Month").value;
                 const day = document.getElementById("sel_Day").value;
                 const birthTime = document.getElementById("birthTime").value;
-                
-                // 轉換為時辰
+
+                // 地支に変換
                 const branchInfo = timeToEarthlyBranch(birthTime);
                 const hour = branchInfo ? branchInfo.branch : "午";
-                
+
                 const genderRadios = document.querySelectorAll("input[name='gender']");
                 let gender = "M";
                 for (let i = 0; i < genderRadios.length; i++) {
@@ -427,7 +427,7 @@
                     }
                 }
 
-                // 儲存到 localStorage
+                // localStorage に保存
                 const data = {
                     year: year,
                     month: month,
@@ -435,22 +435,22 @@
                     birthTime: birthTime,
                     hour: hour,
                     gender: gender,
-                    language: 'zh',
+                    language: 'ja',
                     timestamp: new Date().toISOString()
                 };
                 localStorage.setItem('zwData', JSON.stringify(data));
 
-                // 跳轉到結果頁面
+                // 結果ページに遷移
                 setTimeout(() => {
-                    window.location.href = 'result.html';
+                    window.location.href = 'result-ja.html';
                 }, 500);
             } catch (error) {
-                // 如果發生錯誤，隱藏載入提示並恢復按鈕
-                console.error('發生錯誤：', error);
+                // エラーが発生した場合、ローディングを非表示にしてボタンを復元
+                console.error('エラーが発生しました:', error);
                 loadingOverlay.classList.remove('show');
                 btnCalculate.disabled = false;
                 btnNowDate.disabled = false;
-                alert('處理資料時發生錯誤，請稍後再試。');
+                alert('データ処理中にエラーが発生しました。後でもう一度お試しください。');
             }
         });
     </script>

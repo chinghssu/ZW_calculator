@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="ja">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Language" content="zh-tw">
+    <meta http-equiv="Content-Language" content="ja">
     <link rel="shortcut icon" type="image/png" href="/abc.jpg"/>
-    <title>紫微斗數命盤 - 結果</title>
+    <title>紫微斗数命盤 - 結果</title>
     <link rel="stylesheet" type="text/css" href="js/ziwei.css">
     <style>
         body {
@@ -76,7 +76,7 @@
             color: #666;
         }
 
-        /* 增加命盤框格高度為原本的三倍 */
+        /* 増加命盤框格高度為原本的三倍 */
         .ziwei {
             height: 1800px !important;
             min-height: 1800px;
@@ -86,7 +86,7 @@
             min-height: 420px;
         }
 
-        /* 調整內部元素的位置以配合更大的框格 */
+        /* 調整内部元素的位置以配合更大的框格 */
         .StarC {
             top: 180px !important;
         }
@@ -109,18 +109,18 @@
 </head>
 <body>
     <div class="header-controls">
-        <input type="button" value="← 返回輸入頁面" class="btn-back" id="btnBack">
+        <input type="button" value="← 入力に戻る" class="btn-back" id="btnBack">
 
         <div class="language-switcher">
-            <a href="result.html" class="lang-btn active">中文</a>
+            <a href="result.html" class="lang-btn">中文</a>
             <a href="result-en.html" class="lang-btn">English</a>
-            <a href="result-ja.html" class="lang-btn">日本語</a>
+            <a href="result-ja.html" class="lang-btn active">日本語</a>
         </div>
     </div>
 
     <div id="container"></div>
 
-    <!-- Buy Me a Coffee 按鈕 -->
+    <!-- Buy Me a Coffee ボタン -->
     <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
         <a href="https://www.buymeacoffee.com/jinhssu" target="_blank">
             <img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png"
@@ -135,37 +135,37 @@
     <script src="ziweiui.js"></script>
     <script src="js/language.js"></script>
     <script>
-        // 從 localStorage 讀取資料並計算
+        // localStorage からデータを読み込んで計算
         window.addEventListener('load', function() {
             const zwDataStr = localStorage.getItem('zwData');
 
             if (!zwDataStr) {
                 document.getElementById("container").innerHTML =
                     "<div class='no-data-message'>" +
-                    "<h2>找不到計算資料</h2>" +
-                    "<p>請先回到輸入頁面填寫出生資料</p>" +
+                    "<h2>データが見つかりません</h2>" +
+                    "<p>入力ページに戻って生年月日を入力してください</p>" +
                     "</div>";
                 return;
             }
 
             const zwData = JSON.parse(zwDataStr);
 
-            // 初始化紫微斗數UI（但不包含輸入表單）
+            // 紫微斗数UI を初期化（入力フォームなし）
             initResultUI();
 
-            // 使用儲存的資料計算
+            // 保存されたデータで計算
             calculateWithData(zwData.year, zwData.month, zwData.day, zwData.hour, zwData.gender);
 
-            // 返回按鈕
+            // 戻るボタン
             document.getElementById("btnBack").addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index-ja.html';
             });
         });
 
         function initResultUI() {
-            // 建立結果顯示的 HTML 結構（不含輸入表單）
+            // 結果表示の HTML 構造を作成（入力フォームなし）
             document.getElementById("container").innerHTML =
-                "<div class='zwDivHeader'><h2>紫微斗數命盤結果</h2></div>" +
+                "<div class='zwDivHeader'><h2>紫微斗数命盤の結果</h2></div>" +
                 "<div class='ziwei'>" +
                 "<div id='zw6'></div>" +
                 "<div id='zw7'></div>" +
@@ -184,26 +184,26 @@
         }
 
         function calculateWithData(year, month, day, hour, gender) {
-            // 使用原本的紫微斗數計算邏輯
+            // 元の紫微斗数計算ロジックを使用
             const zw = ziwei.computeZiWei(year, month, day, hour, gender);
 
-            // 顯示基本資訊
+            // 基本情報を表示
             document.getElementById("zwHome").innerHTML =
-                "國曆：" + ziwei.getSolarDay() + "<br>" +
-                "農曆：" + ziwei.getLunarDay() + "<br>" +
-                "生肖：【" + ziwei.getShengXiao() + "】" + "<br>" +
+                "西暦: " + ziwei.getSolarDay() + "<br>" +
+                "旧暦: " + ziwei.getLunarDay() + "<br>" +
+                "干支: 【" + ziwei.getShengXiao() + "】" + "<br>" +
                 "<div>" + ziwei.getFiveElement() + "</div>" +
                 "<div>" + ziwei.getYinYangGender() + "</div>" +
                 "<div class='zwcopy'>by cubshuang</div>";
 
-            // 渲染方向設定
-            const right2left = false; // 預設由左向右
+            // 描画方向設定
+            const right2left = false; // デフォルトは左から右
             const styleLR = [" zwStarLeft", " zwStarRight"];
             if (right2left) {
                 styleLR.reverse();
             }
 
-            // 渲染星曜
+            // 星を描画
             for (let i = 0; i < 12; i++) {
                 document.getElementById("zw" + (i + 1).toString()).innerHTML =
                     "<div class='MangA'>" + EarthlyBranches[i] + "</div>" +

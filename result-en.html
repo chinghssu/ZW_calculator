@@ -1,11 +1,11 @@
 <!DOCTYPE html>
-<html lang="zh-TW">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="Content-Language" content="zh-tw">
+    <meta http-equiv="Content-Language" content="en">
     <link rel="shortcut icon" type="image/png" href="/abc.jpg"/>
-    <title>紫微斗數命盤 - 結果</title>
+    <title>Zi Wei Dou Shu Chart - Result</title>
     <link rel="stylesheet" type="text/css" href="js/ziwei.css">
     <style>
         body {
@@ -109,18 +109,18 @@
 </head>
 <body>
     <div class="header-controls">
-        <input type="button" value="← 返回輸入頁面" class="btn-back" id="btnBack">
+        <input type="button" value="← Back to Input" class="btn-back" id="btnBack">
 
         <div class="language-switcher">
-            <a href="result.html" class="lang-btn active">中文</a>
-            <a href="result-en.html" class="lang-btn">English</a>
+            <a href="result.html" class="lang-btn">中文</a>
+            <a href="result-en.html" class="lang-btn active">English</a>
             <a href="result-ja.html" class="lang-btn">日本語</a>
         </div>
     </div>
 
     <div id="container"></div>
 
-    <!-- Buy Me a Coffee 按鈕 -->
+    <!-- Buy Me a Coffee Button -->
     <div style="position: fixed; bottom: 20px; right: 20px; z-index: 1000;">
         <a href="https://www.buymeacoffee.com/jinhssu" target="_blank">
             <img src="https://cdn.buymeacoffee.com/buttons/v2/default-green.png"
@@ -135,37 +135,37 @@
     <script src="ziweiui.js"></script>
     <script src="js/language.js"></script>
     <script>
-        // 從 localStorage 讀取資料並計算
+        // Read data from localStorage and calculate
         window.addEventListener('load', function() {
             const zwDataStr = localStorage.getItem('zwData');
 
             if (!zwDataStr) {
                 document.getElementById("container").innerHTML =
                     "<div class='no-data-message'>" +
-                    "<h2>找不到計算資料</h2>" +
-                    "<p>請先回到輸入頁面填寫出生資料</p>" +
+                    "<h2>No Data Found</h2>" +
+                    "<p>Please return to the input page and enter your birth details</p>" +
                     "</div>";
                 return;
             }
 
             const zwData = JSON.parse(zwDataStr);
 
-            // 初始化紫微斗數UI（但不包含輸入表單）
+            // Initialize Zi Wei Dou Shu UI (without input form)
             initResultUI();
 
-            // 使用儲存的資料計算
+            // Calculate using saved data
             calculateWithData(zwData.year, zwData.month, zwData.day, zwData.hour, zwData.gender);
 
-            // 返回按鈕
+            // Back button
             document.getElementById("btnBack").addEventListener('click', function() {
-                window.location.href = 'index.html';
+                window.location.href = 'index-en.html';
             });
         });
 
         function initResultUI() {
-            // 建立結果顯示的 HTML 結構（不含輸入表單）
+            // Create result display HTML structure (without input form)
             document.getElementById("container").innerHTML =
-                "<div class='zwDivHeader'><h2>紫微斗數命盤結果</h2></div>" +
+                "<div class='zwDivHeader'><h2>Zi Wei Dou Shu Chart Result</h2></div>" +
                 "<div class='ziwei'>" +
                 "<div id='zw6'></div>" +
                 "<div id='zw7'></div>" +
@@ -184,26 +184,26 @@
         }
 
         function calculateWithData(year, month, day, hour, gender) {
-            // 使用原本的紫微斗數計算邏輯
+            // Use original Zi Wei Dou Shu calculation logic
             const zw = ziwei.computeZiWei(year, month, day, hour, gender);
 
-            // 顯示基本資訊
+            // Display basic information
             document.getElementById("zwHome").innerHTML =
-                "國曆：" + ziwei.getSolarDay() + "<br>" +
-                "農曆：" + ziwei.getLunarDay() + "<br>" +
-                "生肖：【" + ziwei.getShengXiao() + "】" + "<br>" +
+                "Gregorian: " + ziwei.getSolarDay() + "<br>" +
+                "Lunar: " + ziwei.getLunarDay() + "<br>" +
+                "Zodiac: 【" + ziwei.getShengXiao() + "】" + "<br>" +
                 "<div>" + ziwei.getFiveElement() + "</div>" +
                 "<div>" + ziwei.getYinYangGender() + "</div>" +
                 "<div class='zwcopy'>by cubshuang</div>";
 
-            // 渲染方向設定
-            const right2left = false; // 預設由左向右
+            // Render direction setting
+            const right2left = false; // Default left to right
             const styleLR = [" zwStarLeft", " zwStarRight"];
             if (right2left) {
                 styleLR.reverse();
             }
 
-            // 渲染星曜
+            // Render stars
             for (let i = 0; i < 12; i++) {
                 document.getElementById("zw" + (i + 1).toString()).innerHTML =
                     "<div class='MangA'>" + EarthlyBranches[i] + "</div>" +
@@ -258,7 +258,7 @@
                     "<div class='StarC'>" + StarC1 + "<br>" + StarC2 + "</div>";
             }
 
-            // 大小限表
+            // Major and minor limits table
             const DS_Shian = ziwei.getDaShian();
             for (let i = 0; i < 12; i++) {
                 document.getElementById("zw" + (i + 1).toString()).innerHTML +=
