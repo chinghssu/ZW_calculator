@@ -1,35 +1,117 @@
-body { padding: 10px 25px;margin: 0;background-color:336774;}
-.ziwei{ display: grid;border:4px darkgray groove; padding:1px; height:90%;
-	grid-template-columns: repeat(4,25%);
-	grid-template-rows: repeat(4,25%);}
-.ziwei,.zwDivHeader{ width:60%; }
+* {
+	box-sizing: border-box;
+}
+
+body {
+	padding: 10px 25px;
+	margin: 0;
+	background-color:336774;
+	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", "Helvetica Neue", Arial, sans-serif;
+}
+.ziwei{
+	display: grid;
+	border:4px darkgray groove;
+	padding:2px;
+	height:90%;
+	grid-template-columns: repeat(4, 1fr);
+	grid-template-rows: repeat(4, 1fr);
+	gap: 2px;
+	max-width: 750px;
+	margin: 0 auto;
+}
+.ziwei,.zwDivHeader{ width:82%; }
+
+/* ==================== 平板版 (≤ 1024px) ==================== */
 @media only screen and (max-width:1024px){
-.ziwei,.zwDivHeader{ width:100%; } body{padding-bottom: 20px;}}
+	.ziwei,.zwDivHeader{ width:100%; }
+	body{padding-bottom: 20px;}
+	.ziwei>div {
+		font-size:0.85em;  /* 平板版：格子內主要文字大小 */
+		padding: 4px;
+	}
+	.StarC{top:55px;}
+	.MangY10{bottom:3.5em;}
+	.MangY1{bottom:2.2em;}
+}
+
+/* ==================== 手機橫向 (≤ 768px) ==================== */
+@media only screen and (max-width:768px){
+	.ziwei>div {
+		font-size:0.7em;  /* 手機橫向：格子內主要文字大小 (推薦: 0.7-0.8em ≈ 11-13px) */
+		line-height: 1.3;
+		padding: 3px;
+	}
+	.StarA, .StarB{top:3px;}
+	.StarC{top:50%;right:3px;transform: translateY(-50%);}  /* 使用百分比定位，避免重疊 */
+	.Star4{margin-top:3px;}
+	.MangA{left:3px;bottom:3px;}
+	.MangC{right:3px;bottom:3px;}
+	.MangB{bottom:3px;}  /* 宮位名稱 */
+	.MangY10,.MangY1{font-size:0.6em;height:1.2em;}  /* 手機橫向：大限/小限年齡數字 */
+	.MangY10{bottom:4.5em;}  /* 大限（往上移，避免和宮位重疊）*/
+	.MangY1{bottom:3em;}  /* 小限 */
+	.zwStarRight{right:3px;}
+	.zwStarLeft{left:3px;}
+}
+
+/* ==================== 手機直向 (≤ 480px) ==================== */
+@media only screen and (max-width:480px){
+	.ziwei>div {
+		font-size:0.65em;  /* 手機直向：格子內主要文字大小 (推薦: 0.65-0.7em ≈ 10.4-11.2px，最小不低於 0.6em) */
+		line-height: 1.25;
+		padding: 2px;
+	}
+	.StarA, .StarB{top:2px;}
+	.StarC{top:48%;right:2px;transform: translateY(-50%);}  /* 使用百分比定位，避免重疊 */
+	.Star4{margin-top:2px;}
+	.MangA{left:2px;bottom:2px;}
+	.MangC{right:2px;bottom:2px;}
+	.MangB{bottom:2px;}  /* 宮位名稱 */
+	.MangY10,.MangY1{font-size:0.55em;height:1.2em;}  /* 手機直向：大限/小限年齡數字 */
+	.MangY10{bottom:4.2em;}  /* 大限（往上移，避免和宮位重疊）*/
+	.MangY1{bottom:2.8em;}  /* 小限 */
+	.zwStarRight{right:2px;}
+	.zwStarLeft{left:2px;}
+	body{padding: 5px 10px;}
+}
 .zwDivCenter{ grid-column-start: 2; grid-column-end: 4; grid-row-start: 2; grid-row-end: 4; }
-.ziwei>div { border:1px solid #B7B7B7;margin:1px;position:relative;font-size:1em;}
+.ziwei>div {
+	border:1px solid #B7B7B7;
+	position:relative;
+	font-size:0.95em;  /* 桌面版：格子內主要文字大小 */
+	line-height: 1.35;
+	padding: 5px;
+}
 .zwDivHeader,.zwDivHeader h2{ margin:10px 0; position:relative;}
 .zwDivHeader>div{top:0;right:0;}
 .zwDivHeader div { margin-bottom:5px; padding:5px; background-color:#FFFFFF;}
 .zwDivHeader input[type=button],select,input[type=radio]:first-of-type{margin-left:15px;}
-.zwDivCenter{position:relative;border:1px solid #B7B7B7;margin:1px;font-weight: bold;}
+.zwDivCenter{
+	position:relative;
+	border:1px solid #B7B7B7;
+	margin:1px;
+	font-weight: bold;
+	font-size: 1em;  /* 桌面版：中央格子（命盤資訊）文字大小 */
+}
 .zwDivCenter div{text-align:left;margin:10px;}
-.zwDivCenter .zwcopy{bottom:0;right:0;font-size:1em;font-weight: normal;}
+.zwDivCenter .zwcopy{bottom:0;right:0;font-size:0.9em;font-weight: normal;}  /* 桌面版：by cubshuang 署名文字 */
 .StarA,.StarB,.StarC,.MangA,.MangB,.MangC,.MangY10,.MangY1,.zwcopy,.zwDivHeader>div{position:absolute;}
 .starDiv{border:0px solid blue;margin:5px;}
-.StarA{top:0;color:blue;}
-.StarA span{color:Fuchsia;}
-.Star4 {margin-top:8px;}
-.Star4 span{color:#8000FF;font-weight:normal;}
-.StarB{color:Red;top:0;}
-.StarC{text-align: right;top:75px;right:0;width:100%;}
+.StarA{top:5px;color:#6B7C93;}
+.StarA span{color:#B8A5B2;}
+.Star4 {margin-top:5px;}
+.Star4 span{color:#9B8BA8;font-weight:normal;}
+.StarB{color:#C18A7A;top:5px;}
+.StarC{text-align: right;top:65px;right:5px;width:100%;}
 .StarA,.StarC{text-align: right;}
 .StarAll{display:none;}
 .MangB{width:100%;font-weight:bold;}
-.MangC{color:blue;}
-.MangA,.MangB,.MangC{bottom:0;}
-.MangY10,.MangY1{width:100%; height:1.5em;font-size:0.8em;}
+.MangC{color:#6B7C93;right:5px;}
+.MangA,.MangB,.MangC{bottom:5px;}
+.MangA{left:5px;}
+.MangY10,.MangY1{width:100%; height:1.4em;font-size:0.75em;}  /* 桌面版：大限/小限年齡數字 */
 .MangY10,.MangY1,.MangB{text-align: center;}
-.MangY10{bottom:3.2em;color:purple;}
-.MangY1{bottom:1.8em;color:navy;}
-.zwStarRight,.MangC{right:0;}
-.zwStarLeft,.MangA{left:0;}
+.MangY10{bottom:3.8em;color:#9B8BA8;}  /* 大限年齡位置（如：1,13,25...）*/
+.MangY1{bottom:2.4em;color:#6B7C93;}  /* 小限年齡位置 */
+.zwStarRight{right:5px;}
+.zwStarLeft{left:5px;}

@@ -76,33 +76,60 @@
             color: #666;
         }
 
-        /* 増加命盤框格高度為原本的三倍 */
+        /* 命盤自適應高度 - MacBook Air M2 最適化 */
         .ziwei {
-            height: 1800px !important;
-            min-height: 1800px;
+            height: 68vh !important;
+            min-height: 480px;
+            max-height: 650px;
         }
 
         .ziwei > div {
-            min-height: 420px;
-        }
-
-        /* 調整内部元素的位置以配合更大的框格 */
-        .StarC {
-            top: 180px !important;
+            min-height: 120px;
         }
 
         @media only screen and (max-width: 1024px) {
             .ziwei {
-                height: 1500px !important;
-                min-height: 1500px;
+                height: auto !important;
+                min-height: 420px;
             }
             .ziwei > div {
-                min-height: 350px;
+                min-height: 110px;
             }
 
             .header-controls {
                 flex-direction: column;
                 gap: 10px;
+            }
+        }
+
+        /* モバイル横向き最適化 */
+        @media only screen and (max-width: 768px) {
+            .ziwei {
+                min-height: 400px;
+            }
+            .ziwei > div {
+                min-height: 100px;  /* 高さを増やして重なりを防ぐ */
+            }
+        }
+
+        /* モバイル縦向き最適化 */
+        @media only screen and (max-width: 480px) {
+            .ziwei {
+                min-height: 350px;
+            }
+            .ziwei > div {
+                min-height: 85px;  /* 高さを増やして重なりを防ぐ */
+            }
+            .header-controls {
+                margin: 10px 0;
+            }
+            .btn-back {
+                font-size: 14px;
+                padding: 8px 15px;
+            }
+            .lang-btn {
+                font-size: 11px;
+                padding: 4px 8px;
             }
         }
     </style>
