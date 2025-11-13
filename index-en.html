@@ -308,7 +308,7 @@
                 <label>Time of Birth</label>
                 <div id="standardTimeInput">
                     <input type="time" id="birthTime" value="12:00">
-                    <span class="time-display" id="timeDisplay">→ Wu (11:00-12:59)</span>
+                    <span class="time-display" id="timeDisplay">→ Wu (午, 11:00-12:59)</span>
                 </div>
                 <div id="branchTimeInput" style="display: none;">
                     <select id="birthBranch"></select>
@@ -442,7 +442,7 @@
             if (timeInput) {
                 const branchInfo = timeToEarthlyBranch(timeInput);
                 if (branchInfo) {
-                    let displayText = `→ ${branchInfo.branchEn} (${branchInfo.timeRange})`;
+                    let displayText = `→ ${branchInfo.branchEn} (${branchInfo.branch}, ${branchInfo.timeRange})`;
                     // If it's 23:00-23:59, show next day's Zi hour
                     if (needsDateAdjustment(timeInput)) {
                         displayText += ' 【Next Day Zi】';
