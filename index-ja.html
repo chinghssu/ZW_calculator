@@ -293,10 +293,25 @@
             </div>
 
             <div class="form-group">
+                <label>時刻入力方式</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="timeMode" value="standard" checked> 標準時刻
+                    </label>
+                    <label>
+                        <input type="radio" name="timeMode" value="branch"> 地支時辰
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label>出生時刻</label>
-                <div>
+                <div id="standardTimeInput">
                     <input type="time" id="birthTime" value="12:00">
                     <span class="time-display" id="timeDisplay">→ 午の刻 (11:00-12:59)</span>
+                </div>
+                <div id="branchTimeInput" style="display: none;">
+                    <select id="birthBranch"></select>
                 </div>
             </div>
 
@@ -320,7 +335,8 @@
 
         <div class="info">
             * 時刻は出生地の現地時間で入力してください<br>
-            * 23:00以降は翌日の子の刻となります
+            * 23:00-23:59は翌日の子の刻となります（システムが自動調整）<br>
+            * 「標準時刻」または「地支時辰」を選択できます
         </div>
 
         <div class="service-notice">
@@ -359,6 +375,44 @@
         addOption("sel_Month", 1, 12);
         addOption("sel_Day", 1, 31);
 
+        // 地支時辰オプションを初期化
+        function initBranchOptions() {
+            updateBranchOptions();
+        }
+
+        // 地支時辰オプションを更新（選択した日付に基づく）
+        function updateBranchOptions() {
+            const year = document.getElementById("sel_Year").value;
+            const month = document.getElementById("sel_Month").value;
+            const day = document.getElementById("sel_Day").value;
+            const branchSelect = document.getElementById("birthBranch");
+
+            // 現在の選択を保存
+            const currentValue = branchSelect.value || "午";
+
+            // オプションをクリア
+            branchSelect.innerHTML = '';
+
+            // オプションを再生成（日付範囲付き）
+            const branches = getAllEarthlyBranches(year, month, day);
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.value;
+                option.textContent = `${branch.value}の刻 ${getBranchDateTimeRange(year, month, day, branch.index)}`;
+                branchSelect.appendChild(option);
+            });
+
+            // 以前の選択を復元
+            branchSelect.value = currentValue;
+        }
+
+        initBranchOptions();
+
+        // 日付変更を監視して時辰オプションを更新
+        document.getElementById("sel_Year").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Month").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Day").addEventListener('change', updateBranchOptions);
+
         // 現在時刻を設定
         function setNowDate() {
             const Today = new Date();
@@ -372,6 +426,9 @@
             const time = formatTime(h, Today.getMinutes());
             document.getElementById("birthTime").value = time;
             updateTimeDisplay();
+
+            // 地支時辰オプションを更新
+            updateBranchOptions();
         }
 
         // 時刻表示を更新
@@ -382,10 +439,35 @@
             if (timeInput) {
                 const branchInfo = timeToEarthlyBranch(timeInput);
                 if (branchInfo) {
-                    timeDisplay.textContent = `→ ${branchInfo.branchJa}の刻 (${branchInfo.timeRange})`;
+                    let displayText = `→ ${branchInfo.branchJa}の刻 (${branchInfo.timeRange})`;
+                    // 23:00-23:59の場合、翌日の子の刻を表示
+                    if (needsDateAdjustment(timeInput)) {
+                        displayText += ' 【翌日子の刻】';
+                    }
+                    timeDisplay.textContent = displayText;
                 }
             }
         }
+
+        // 時刻入力モードを切り替え
+        function toggleTimeMode() {
+            const mode = document.querySelector('input[name="timeMode"]:checked').value;
+            const standardInput = document.getElementById('standardTimeInput');
+            const branchInput = document.getElementById('branchTimeInput');
+
+            if (mode === 'standard') {
+                standardInput.style.display = 'block';
+                branchInput.style.display = 'none';
+            } else {
+                standardInput.style.display = 'none';
+                branchInput.style.display = 'block';
+            }
+        }
+
+        // 時刻入力モードの変更を監視
+        document.querySelectorAll('input[name="timeMode"]').forEach(radio => {
+            radio.addEventListener('change', toggleTimeMode);
+        });
 
         // 現在時刻で初期化
         setNowDate();
@@ -409,14 +491,32 @@
 
             try {
                 // データ収集
-                const year = document.getElementById("sel_Year").value;
-                const month = document.getElementById("sel_Month").value;
-                const day = document.getElementById("sel_Day").value;
-                const birthTime = document.getElementById("birthTime").value;
+                let year = document.getElementById("sel_Year").value;
+                let month = document.getElementById("sel_Month").value;
+                let day = document.getElementById("sel_Day").value;
 
-                // 地支に変換
-                const branchInfo = timeToEarthlyBranch(birthTime);
-                const hour = branchInfo ? branchInfo.branch : "午";
+                // 時刻入力モードを判定
+                const timeMode = document.querySelector('input[name="timeMode"]:checked').value;
+                let birthTime, hour;
+
+                if (timeMode === 'standard') {
+                    // 標準時刻モード
+                    birthTime = document.getElementById("birthTime").value;
+                    const branchInfo = timeToEarthlyBranch(birthTime);
+                    hour = branchInfo ? branchInfo.branch : "午";
+
+                    // 23:00-23:59の日付調整を処理（翌日の子の刻）
+                    const adjustedDate = adjustDateForTime(year, month, day, birthTime);
+                    year = adjustedDate.year;
+                    month = adjustedDate.month;
+                    day = adjustedDate.day;
+                } else {
+                    // 地支時辰モード
+                    // ユーザーが選択した地支をそのまま使用、日付調整は不要
+                    // 計算関数自体が地支時辰を使用するため
+                    hour = document.getElementById("birthBranch").value;
+                    birthTime = getTimeFromBranch(hour);
+                }
 
                 const genderRadios = document.querySelectorAll("input[name='gender']");
                 let gender = "M";
@@ -436,6 +536,7 @@
                     hour: hour,
                     gender: gender,
                     language: 'ja',
+                    timeMode: timeMode,
                     timestamp: new Date().toISOString()
                 };
                 localStorage.setItem('zwData', JSON.stringify(data));

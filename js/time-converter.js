@@ -81,9 +81,91 @@ function formatTime(hour, minute = 0) {
 function getTimeFromBranch(branch) {
     const index = EARTHLY_BRANCHES.indexOf(branch);
     if (index === -1) return "12:00";
-    
+
     // 返回該時辰的中間時間
     let hour = (index * 2);
     if (hour === 0) hour = 23; // 子時
     return formatTime(hour, 30);
+}
+
+/**
+ * 取得所有時辰選項（用於下拉選單）
+ * @param {number} year - 年（可選）
+ * @param {number} month - 月（可選）
+ * @param {number} day - 日（可選）
+ * @returns {Array} 時辰選項陣列 [{ value: "子", label: "子時 (23:00-00:59)", index: 0 }, ...]
+ */
+function getAllEarthlyBranches(year, month, day) {
+    if (year && month && day) {
+        // 如果提供了日期，顯示完整的日期時間範圍
+        return EARTHLY_BRANCHES.map((branch, index) => ({
+            value: branch,
+            label: `${branch}時 ${getBranchDateTimeRange(year, month, day, index)}`,
+            index: index
+        }));
+    } else {
+        // 否則只顯示時間範圍
+        return EARTHLY_BRANCHES.map((branch, index) => ({
+            value: branch,
+            label: `${branch}時 (${getTimeRange(index)})`,
+            index: index
+        }));
+    }
+}
+
+/**
+ * 取得時辰對應的完整日期時間範圍
+ * @param {number} year - 年
+ * @param {number} month - 月
+ * @param {number} day - 日
+ * @param {number} branchIndex - 時辰索引 (0-11)
+ * @returns {string} 完整日期時間範圍，例如 "(11/13 23:00 - 11/14 00:59)"
+ */
+function getBranchDateTimeRange(year, month, day, branchIndex) {
+    const date = new Date(year, month - 1, day);
+
+    if (branchIndex === 0) {
+        // 子時：前一天 23:00 - 當天 00:59
+        const prevDate = new Date(date);
+        prevDate.setDate(prevDate.getDate() - 1);
+        return `(${prevDate.getMonth() + 1}/${prevDate.getDate()} 23:00 - ${month}/${day} 00:59)`;
+    } else {
+        // 其他時辰
+        const startHour = (branchIndex * 2 - 1);
+        const endHour = (branchIndex * 2);
+        return `(${month}/${day} ${startHour.toString().padStart(2, '0')}:00 - ${month}/${day} ${endHour.toString().padStart(2, '0')}:59)`;
+    }
+}
+
+/**
+ * 檢查時間是否需要調整日期（23:00-23:59 需要日期+1）
+ * @param {string} time - 格式 "HH:MM"
+ * @returns {boolean} 如果需要調整日期返回 true
+ */
+function needsDateAdjustment(time) {
+    if (!time) return false;
+    const [hourStr] = time.split(':');
+    const hour = parseInt(hourStr);
+    return hour >= 23;
+}
+
+/**
+ * 根據時間調整日期（處理 23:00-23:59 子時的日期問題）
+ * @param {number} year - 年
+ * @param {number} month - 月
+ * @param {number} day - 日
+ * @param {string} time - 時間 "HH:MM"
+ * @returns {object} { year, month, day } 調整後的日期
+ */
+function adjustDateForTime(year, month, day, time) {
+    if (needsDateAdjustment(time)) {
+        const date = new Date(year, month - 1, day);
+        date.setDate(date.getDate() + 1);
+        return {
+            year: date.getFullYear(),
+            month: date.getMonth() + 1,
+            day: date.getDate()
+        };
+    }
+    return { year: parseInt(year), month: parseInt(month), day: parseInt(day) };
 }

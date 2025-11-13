@@ -280,7 +280,7 @@
             <a href="index-ja.html" class="lang-btn">日本語</a>
         </div>
 
-        <h1>Zi Wei Dou Shu Chart</h1>
+        <h1>紫微斗數命盤 Zi Wei Dou Shu Chart</h1>
 
         <form id="zwForm">
             <div class="form-group">
@@ -293,10 +293,25 @@
             </div>
 
             <div class="form-group">
+                <label>Time Input Mode</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="timeMode" value="standard" checked> Standard Time
+                    </label>
+                    <label>
+                        <input type="radio" name="timeMode" value="branch"> 地支時辰 Earthly Branch Time
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label>Time of Birth</label>
-                <div>
+                <div id="standardTimeInput">
                     <input type="time" id="birthTime" value="12:00">
                     <span class="time-display" id="timeDisplay">→ Wu (11:00-12:59)</span>
+                </div>
+                <div id="branchTimeInput" style="display: none;">
+                    <select id="birthBranch"></select>
                 </div>
             </div>
 
@@ -320,7 +335,8 @@
 
         <div class="info">
             * Time based on local birth place<br>
-            * After 23:00 counts as next day's Zi hour
+            * 23:00-23:59 counts as next day's (子時)Zi hour (system will auto-adjust date)<br>
+            * Choose between "Standard Time" or "Earthly Branch" input mode
         </div>
 
         <div class="service-notice">
@@ -359,6 +375,47 @@
         addOption("sel_Month", 1, 12);
         addOption("sel_Day", 1, 31);
 
+        // Initialize earthly branch options
+        function initBranchOptions() {
+            updateBranchOptions();
+        }
+
+        // Update earthly branch options (based on selected date)
+        function updateBranchOptions() {
+            const year = document.getElementById("sel_Year").value;
+            const month = document.getElementById("sel_Month").value;
+            const day = document.getElementById("sel_Day").value;
+            const branchSelect = document.getElementById("birthBranch");
+
+            // Save current selection
+            const currentValue = branchSelect.value || "午";
+
+            // Clear options
+            branchSelect.innerHTML = '';
+
+            // Regenerate options (with date range)
+            const branches = getAllEarthlyBranches(year, month, day);
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.value;
+                option.textContent = `${branch.label.split('時')[0]}${branch.index === 0 ? '' : ' '}${getBranchDateTimeRange(year, month, day, branch.index)}`.replace('時', '');
+                // For English, use branch name in English
+                const branchNames = ["（子）Zi", "（丑）Chou", "（寅）Yin", "（卯）Mao", "（辰）Chen", "（巳）Si", "（午）Wu", "（未）Wei", "（申）Shen", "（酉）You", "（戌）Xu", "（亥）Hai"];
+                option.textContent = `${branchNames[branch.index]} ${getBranchDateTimeRange(year, month, day, branch.index)}`;
+                branchSelect.appendChild(option);
+            });
+
+            // Restore previous selection
+            branchSelect.value = currentValue;
+        }
+
+        initBranchOptions();
+
+        // Listen to date changes to update branch options
+        document.getElementById("sel_Year").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Month").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Day").addEventListener('change', updateBranchOptions);
+
         // Set current time
         function setNowDate() {
             const Today = new Date();
@@ -367,25 +424,53 @@
             document.getElementById("sel_Year").value = Today.getFullYear();
             document.getElementById("sel_Month").value = Today.getMonth() + 1;
             document.getElementById("sel_Day").value = Today.getDate();
-            
+
             // Set current time
             const time = formatTime(h, Today.getMinutes());
             document.getElementById("birthTime").value = time;
             updateTimeDisplay();
+
+            // Update earthly branch options
+            updateBranchOptions();
         }
 
         // Update time display
         function updateTimeDisplay() {
             const timeInput = document.getElementById("birthTime").value;
             const timeDisplay = document.getElementById("timeDisplay");
-            
+
             if (timeInput) {
                 const branchInfo = timeToEarthlyBranch(timeInput);
                 if (branchInfo) {
-                    timeDisplay.textContent = `→ ${branchInfo.branchEn} (${branchInfo.timeRange})`;
+                    let displayText = `→ ${branchInfo.branchEn} (${branchInfo.timeRange})`;
+                    // If it's 23:00-23:59, show next day's Zi hour
+                    if (needsDateAdjustment(timeInput)) {
+                        displayText += ' 【Next Day Zi】';
+                    }
+                    timeDisplay.textContent = displayText;
                 }
             }
         }
+
+        // Toggle time input mode
+        function toggleTimeMode() {
+            const mode = document.querySelector('input[name="timeMode"]:checked').value;
+            const standardInput = document.getElementById('standardTimeInput');
+            const branchInput = document.getElementById('branchTimeInput');
+
+            if (mode === 'standard') {
+                standardInput.style.display = 'block';
+                branchInput.style.display = 'none';
+            } else {
+                standardInput.style.display = 'none';
+                branchInput.style.display = 'block';
+            }
+        }
+
+        // Listen to time input mode changes
+        document.querySelectorAll('input[name="timeMode"]').forEach(radio => {
+            radio.addEventListener('change', toggleTimeMode);
+        });
 
         // Initialize with current time
         setNowDate();
@@ -409,15 +494,33 @@
 
             try {
                 // Collect data
-                const year = document.getElementById("sel_Year").value;
-                const month = document.getElementById("sel_Month").value;
-                const day = document.getElementById("sel_Day").value;
-                const birthTime = document.getElementById("birthTime").value;
-                
-                // Convert to earthly branch
-                const branchInfo = timeToEarthlyBranch(birthTime);
-                const hour = branchInfo ? branchInfo.branch : "午";
-                
+                let year = document.getElementById("sel_Year").value;
+                let month = document.getElementById("sel_Month").value;
+                let day = document.getElementById("sel_Day").value;
+
+                // Determine time input mode
+                const timeMode = document.querySelector('input[name="timeMode"]:checked').value;
+                let birthTime, hour;
+
+                if (timeMode === 'standard') {
+                    // Standard time mode
+                    birthTime = document.getElementById("birthTime").value;
+                    const branchInfo = timeToEarthlyBranch(birthTime);
+                    hour = branchInfo ? branchInfo.branch : "午";
+
+                    // Handle date adjustment for 23:00-23:59 (next day's Zi hour)
+                    const adjustedDate = adjustDateForTime(year, month, day, birthTime);
+                    year = adjustedDate.year;
+                    month = adjustedDate.month;
+                    day = adjustedDate.day;
+                } else {
+                    // Earthly branch mode
+                    // Use user's selected branch directly, no date adjustment needed
+                    // Because the calculation function itself uses earthly branches
+                    hour = document.getElementById("birthBranch").value;
+                    birthTime = getTimeFromBranch(hour);
+                }
+
                 const genderRadios = document.querySelectorAll("input[name='gender']");
                 let gender = "M";
                 for (let i = 0; i < genderRadios.length; i++) {
@@ -436,6 +539,7 @@
                     hour: hour,
                     gender: gender,
                     language: 'en',
+                    timeMode: timeMode,
                     timestamp: new Date().toISOString()
                 };
                 localStorage.setItem('zwData', JSON.stringify(data));

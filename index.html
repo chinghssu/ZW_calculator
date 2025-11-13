@@ -293,10 +293,25 @@
             </div>
 
             <div class="form-group">
+                <label>時間輸入方式</label>
+                <div class="radio-group">
+                    <label>
+                        <input type="radio" name="timeMode" value="standard" checked> 標準時間
+                    </label>
+                    <label>
+                        <input type="radio" name="timeMode" value="branch"> 地支時辰
+                    </label>
+                </div>
+            </div>
+
+            <div class="form-group">
                 <label>出生時間</label>
-                <div>
+                <div id="standardTimeInput">
                     <input type="time" id="birthTime" value="12:00">
                     <span class="time-display" id="timeDisplay">→ 午時 (11:00-12:59)</span>
+                </div>
+                <div id="branchTimeInput" style="display: none;">
+                    <select id="birthBranch"></select>
                 </div>
             </div>
 
@@ -320,7 +335,8 @@
 
         <div class="info">
             * 時間以出生地當地時間為準<br>
-            * 23:00後算隔日子時
+            * 23:00-23:59 算隔日子時（系統會自動調整日期）<br>
+            * 可選擇「標準時間」或「地支時辰」輸入方式
         </div>
 
         <div class="service-notice">
@@ -359,6 +375,44 @@
         addOption("sel_Month", 1, 12);
         addOption("sel_Day", 1, 31);
 
+        // 初始化地支時辰選項
+        function initBranchOptions() {
+            updateBranchOptions();
+        }
+
+        // 更新地支時辰選項（根據當前選擇的日期）
+        function updateBranchOptions() {
+            const year = document.getElementById("sel_Year").value;
+            const month = document.getElementById("sel_Month").value;
+            const day = document.getElementById("sel_Day").value;
+            const branchSelect = document.getElementById("birthBranch");
+
+            // 保存當前選擇的時辰
+            const currentValue = branchSelect.value || "午";
+
+            // 清空選項
+            branchSelect.innerHTML = '';
+
+            // 重新生成選項（帶日期範圍）
+            const branches = getAllEarthlyBranches(year, month, day);
+            branches.forEach(branch => {
+                const option = document.createElement('option');
+                option.value = branch.value;
+                option.textContent = branch.label;
+                branchSelect.appendChild(option);
+            });
+
+            // 恢復之前的選擇
+            branchSelect.value = currentValue;
+        }
+
+        initBranchOptions();
+
+        // 監聽日期變化，更新時辰選項
+        document.getElementById("sel_Year").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Month").addEventListener('change', updateBranchOptions);
+        document.getElementById("sel_Day").addEventListener('change', updateBranchOptions);
+
         // 設定現在時間
         function setNowDate() {
             const Today = new Date();
@@ -367,25 +421,53 @@
             document.getElementById("sel_Year").value = Today.getFullYear();
             document.getElementById("sel_Month").value = Today.getMonth() + 1;
             document.getElementById("sel_Day").value = Today.getDate();
-            
+
             // 設定當前時間
             const time = formatTime(h, Today.getMinutes());
             document.getElementById("birthTime").value = time;
             updateTimeDisplay();
+
+            // 更新地支時辰選項
+            updateBranchOptions();
         }
 
         // 更新時辰顯示
         function updateTimeDisplay() {
             const timeInput = document.getElementById("birthTime").value;
             const timeDisplay = document.getElementById("timeDisplay");
-            
+
             if (timeInput) {
                 const branchInfo = timeToEarthlyBranch(timeInput);
                 if (branchInfo) {
-                    timeDisplay.textContent = `→ ${branchInfo.branch}時 (${branchInfo.timeRange})`;
+                    let displayText = `→ ${branchInfo.branch}時 (${branchInfo.timeRange})`;
+                    // 如果是 23:00-23:59，提示為隔日子時
+                    if (needsDateAdjustment(timeInput)) {
+                        displayText += ' 【隔日子時】';
+                    }
+                    timeDisplay.textContent = displayText;
                 }
             }
         }
+
+        // 切換時間輸入模式
+        function toggleTimeMode() {
+            const mode = document.querySelector('input[name="timeMode"]:checked').value;
+            const standardInput = document.getElementById('standardTimeInput');
+            const branchInput = document.getElementById('branchTimeInput');
+
+            if (mode === 'standard') {
+                standardInput.style.display = 'block';
+                branchInput.style.display = 'none';
+            } else {
+                standardInput.style.display = 'none';
+                branchInput.style.display = 'block';
+            }
+        }
+
+        // 監聽時間輸入模式切換
+        document.querySelectorAll('input[name="timeMode"]').forEach(radio => {
+            radio.addEventListener('change', toggleTimeMode);
+        });
 
         // 初始化為現在時間
         setNowDate();
@@ -409,15 +491,33 @@
 
             try {
                 // 收集資料
-                const year = document.getElementById("sel_Year").value;
-                const month = document.getElementById("sel_Month").value;
-                const day = document.getElementById("sel_Day").value;
-                const birthTime = document.getElementById("birthTime").value;
-                
-                // 轉換為時辰
-                const branchInfo = timeToEarthlyBranch(birthTime);
-                const hour = branchInfo ? branchInfo.branch : "午";
-                
+                let year = document.getElementById("sel_Year").value;
+                let month = document.getElementById("sel_Month").value;
+                let day = document.getElementById("sel_Day").value;
+
+                // 判斷時間輸入模式
+                const timeMode = document.querySelector('input[name="timeMode"]:checked').value;
+                let birthTime, hour;
+
+                if (timeMode === 'standard') {
+                    // 標準時間模式
+                    birthTime = document.getElementById("birthTime").value;
+                    const branchInfo = timeToEarthlyBranch(birthTime);
+                    hour = branchInfo ? branchInfo.branch : "午";
+
+                    // 處理 23:00-23:59 的日期調整（算隔日子時）
+                    const adjustedDate = adjustDateForTime(year, month, day, birthTime);
+                    year = adjustedDate.year;
+                    month = adjustedDate.month;
+                    day = adjustedDate.day;
+                } else {
+                    // 地支時辰模式
+                    // 直接使用使用者選擇的時辰，不需要調整日期
+                    // 因為計算命盤函數本身就是用地支時辰
+                    hour = document.getElementById("birthBranch").value;
+                    birthTime = getTimeFromBranch(hour);
+                }
+
                 const genderRadios = document.querySelectorAll("input[name='gender']");
                 let gender = "M";
                 for (let i = 0; i < genderRadios.length; i++) {
@@ -436,6 +536,7 @@
                     hour: hour,
                     gender: gender,
                     language: 'zh',
+                    timeMode: timeMode,
                     timestamp: new Date().toISOString()
                 };
                 localStorage.setItem('zwData', JSON.stringify(data));
